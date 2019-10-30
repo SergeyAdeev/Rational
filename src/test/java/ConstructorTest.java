@@ -1,59 +1,62 @@
-import com.sun.org.apache.bcel.internal.generic.ATHROW;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class ConstructorTest {
+
+    private void assertRational(int expectedNumerator, int expectedDenominator, Rational rational) {
+        assertEquals("Constructor returns wrong numerator", expectedNumerator, rational.getNumerator());
+        assertEquals("Constructor returns wrong denominator", expectedDenominator, rational.getDenominator());
+    }
+
     @Test
     public void testStandardConstructor() {
         Rational standard = new Rational();
-        assertEquals("Standard constructor returns wrong numerator", 0, standard.getNumerator());
-        assertEquals("Standard constructor returns wrong denominator", 1, standard.getDenominator());
+        assertRational(0, 1, standard);
     }
 
     @Test
-    public void constructorReducePositive(){
-        Rational result = new Rational(4,10);
-        assertEquals("Constructor returns wrong numerator", 2, result.getNumerator());
-        assertEquals("Constructor returns wrong denominator", 5, result.getDenominator());
+    public void reducePositive() {
+        Rational constructor = new Rational(4, 10);
+        assertRational(2, 5, constructor);
     }
 
     @Test
-    public void constructorSimplifyNegative(){
-        Rational result = new Rational(-5,-2);
-        assertEquals("Constructor returns wrong numerator", 5, result.getNumerator());
-        assertEquals("Constructor returns wrong denominator", 2, result.getDenominator());
+    public void simplifyNegative() {
+        Rational constructor = new Rational(-5, -2);
+        assertRational(5, 2, constructor);
     }
 
     @Test
-    public void constructorPositiveAndNegative(){
-        Rational result = new Rational(2,-2);
-        assertEquals("Constructor returns wrong numerator", -1, result.getNumerator());
-        assertEquals("Constructor returns wrong denominator", 1, result.getDenominator());
+    public void reduceSimplifyPositiveAndNegative() {
+        Rational constructor = new Rational(2, -2);
+        assertRational(-1, 1, constructor);
     }
 
-    // choose one of next
     @Test
-    public void constructor_1_0() throws ArithmeticException{
-        try{
-            new Rational(1,0);
-        } catch (ArithmeticException thrown){
+    public void nullNumeratorSimplify() {
+        Rational constructor = new Rational(0, -7);
+        assertRational(0, 1, constructor);
+    }
+
+    @Test
+    public void nullDenominator() throws ArithmeticException {
+        try {
+            new Rational(1, 0);
+            Assert.fail("Expected ArithmeticException");
+        } catch (ArithmeticException thrown) {
             Assert.assertEquals("division by zero !", thrown.getMessage());
-        }//fail
+        }
     }
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void constructor_0_0() throws ArithmeticException{
-        thrown.expect(ArithmeticException.class);
-        thrown.expectMessage("division by zero !");
-        new Rational(0,0);
-        thrown = ExpectedException.none();
+    public void setConstructor() {
+        int numerator = 1;
+        int denominator = 2;
+        Rational constructor = new Rational();
+        constructor.setNumerator(numerator);
+        constructor.setDenominator(denominator);
+        assertRational(1, 2, constructor);
     }
-    // end of choice
 }
